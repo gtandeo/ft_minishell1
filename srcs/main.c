@@ -20,34 +20,6 @@ char		*ft_get_env_elm(char **env, const char *target)
 	return NULL;
 }
 
-/*char		*ft_get_pwd(char **env)
-{
-	int		i;
-
-	i = 0;
-	while (env[i])
-	{
-		if (!ft_strncmp(env[i], "PWD=", 4))
-			return ft_strdup(env[i] + 4);
-		i++;
-	}
-	return NULL;
-}
-
-char		*ft_get_opwd(char **env)
-{
-	int		i;
-
-	i = 0;
-	while (env[i])
-	{
-		if (!ft_strncmp(env[i], "OLDPWD=", 7))
-			return ft_strdup(env[i] + 7);
-		i++;
-	}
-	return NULL;
-}*/
-
 t_sh		*struct_init(char **env)
 {
 	t_sh	*ret;
@@ -64,27 +36,34 @@ t_sh		*struct_init(char **env)
 	ret->env = ft_tabdup(env);
 	if (!(ret->path = (const char **)ft_get_env_elm(env, "PATH=")) || !(ret->pwd = ft_get_env_elm(env, "PWD=")) || !(ret->oldpwd = ft_get_env_elm(env, "OLDPWD=")))
 		return NULL;
+	ret->line = NULL;
 	return ret;
+}
+
+int			ft_line_parsor(t_sh *data)
+{
+	(void)data;
+	return (0);
 }
 
 void		ft_sh(t_sh *data)
 {
-	pid_t	father;
-	char	*line;
-
-	line = NULL;
-	while (ft_strcmp(line, "exit"))
+	//pid_t	father;
+	
+	while (ft_strcmp(data->line, "exit"))
 	{
-		get_next_line(0, &line);
-		if (line)
+		get_next_line(0, &(data->line));
+		if (ft_line_parsor(data))
+			ft_putendl("line_OK");
+		/*if (line)
 		{
 			father = fork();
 			if (father > 0)
 				wait(NULL);
 			else if (father == 0)
 				execve("/bin/ls", ft_strsplit(line, ' '), data->env);
-		}
-		free(line);
+		}*/
+		free(data->line);
 	}
 }
 

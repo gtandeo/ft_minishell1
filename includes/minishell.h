@@ -23,6 +23,7 @@ typedef struct	s_sh
 	const char	**path;
 	char		*pwd;
 	char		*oldpwd;
+	char		*line;
 }				t_sh;
 
 /*
