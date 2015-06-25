@@ -16,24 +16,18 @@ char		*ft_epur_str(char *line)
 	j = 0;
 	if (!line)
 		return (NULL);
-	while (line[i] && (line[i] == ' ' || line[i] == '\t'))
-		i++;
 	if ((ret = (char*)malloc(sizeof(char) * ft_strlen(line))) != NULL)
+	{
 		while (line[i])
 		{
-			if (line[i] == ' ' || line[i] == '\t')
-			{
-				while (line[i] == ' ' || line[i] == '\t')
-					i++;
-				if (!line[i])
-					break;
-				ret[j++] = ' ';
+			if (line[i] == '\t' || line[i] == '\n' || line[i] == '\v')
+				ret[j] = ' ';
+			else
 				ret[j] = line[i];
-				j++;
-			}
-			else if (line[i])
-				ret[j++] = line[i++];
+			i++;
+			j++;
 		}
+	}
 	ret[j] = '\0';
 	return (ret);
 }
@@ -75,8 +69,9 @@ t_sh		*struct_init(char **env)
 int			ft_line_parsor(t_sh *data)
 {
 	char	**line = ft_strsplit(data->line, ' ');
-	(void)line;
-	return (0);
+	
+	ft_print_tab(line);
+	return (1);
 }
 
 void		ft_sh(t_sh *data)
@@ -88,7 +83,6 @@ void		ft_sh(t_sh *data)
 	{
 		get_next_line(0, &(line));
 		data->line = ft_epur_str(line);
-		printf("|%s|\n", data->line);
 		if (ft_line_parsor(data))
 			ft_putendl("line_OK");
 		/*if (line)
