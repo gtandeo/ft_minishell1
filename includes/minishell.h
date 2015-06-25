@@ -20,13 +20,17 @@ typedef struct	s_sh
 {
 	void		(*error[7])();
 	char		**env;
+	const char	**path;
+	char		*pwd;
+	char		*oldpwd;
 }				t_sh;
 
 /*
 ** ERROR FUNCTIONS
 */
 void	args_error(int ac);
-void	env_error(const char **env);
+void	env_error(char **env);
+void	malloc_error(void);
 void	setenv_format_error(void);
 void	setenv_already_exist_error(void);
 void	unsetenv_format_error(void);
