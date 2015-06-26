@@ -104,13 +104,15 @@ void		ft_sh(t_sh *data)
 	char	*prompt;
 	
 	prompt = ft_get_env_elm(data->env, "USER=");
-	while (ft_strcmp(data->line, "exit"))
+	while (1)
 	{
 		ft_putstr(prompt);
 		ft_putstr("> ");
 		get_next_line(0, &line);
 		if (line[0])
 		{
+			if (!ft_strcmp(line, "exit"))
+				return ;
 			data->line = ft_epur_str(line);
 			ft_line_parsor(data);
 			free(data->line);
