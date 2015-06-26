@@ -20,7 +20,8 @@ typedef struct	s_sh
 {
 	void		(*error[7])();
 	char		**env;
-	const char	**path;
+	char		*path;
+	char		*home;
 	char		*pwd;
 	char		*oldpwd;
 	char		*line;

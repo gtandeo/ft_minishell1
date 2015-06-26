@@ -6,6 +6,15 @@ static void	start_errors(int ac, char **env)
 	env_error(env);
 }
 
+void		ft_free_struct(t_sh *data)
+{
+	free(data->oldpwd);
+	free(data->pwd);
+	free(data->home);
+	free(data->path);
+	free(data->env);
+}
+
 char		*ft_epur_str(char *line)
 {
 	char	*ret;
@@ -60,7 +69,7 @@ t_sh		*struct_init(char **env)
 	ret->error[5] = cd_path_error;
 	ret->error[6] = cd_rights_error;
 	ret->env = ft_tabdup(env);
-	if (!(ret->path = (const char **)ft_get_env_elm(env, "PATH=")) || !(ret->pwd = ft_get_env_elm(env, "PWD=")) || !(ret->oldpwd = ft_get_env_elm(env, "OLDPWD=")))
+	if (!(ret->path = ft_get_env_elm(env, "PATH=")) ||!(ret->home = ft_get_env_elm(env, "HOME")) || !(ret->pwd = ft_get_env_elm(env, "PWD=")) || !(ret->oldpwd = ft_get_env_elm(env, "OLDPWD=")))
 		return NULL;
 	ret->line = NULL;
 	return ret;
@@ -68,34 +77,45 @@ t_sh		*struct_init(char **env)
 
 int			ft_line_parsor(t_sh *data)
 {
+	pid_t	father;
 	char	**line = ft_strsplit(data->line, ' ');
+	char	**path;
+	char	*cmd = ft_strdup(line[0]);
+	int		i;
 	
+	i = 0;
+	path = ft_strsplit(data->path, ':');
 	ft_print_tab(line);
+	while (path[i])
+	{
+		father = fork();
+		if (father > 0)
+			wait(NULL);
+		else if (father == 0)
+			execve(ft_strjoin(ft_strjoin(path[i], "/"), cmd), line, data->env);
+		i++;
+	}
 	return (1);
 }
 
 void		ft_sh(t_sh *data)
 {
-	//pid_t	father;
 	char	*line;
+	char	*prompt;
 	
+	prompt = ft_get_env_elm(data->env, "USER=");
 	while (ft_strcmp(data->line, "exit"))
 	{
-		get_next_line(0, &(line));
-		data->line = ft_epur_str(line);
-		if (ft_line_parsor(data))
-			ft_putendl("line_OK");
-		/*if (line)
+		ft_putstr(prompt);
+		ft_putstr("> ");
+		get_next_line(0, &line);
+		if (line[0])
 		{
-			father = fork();
-			if (father > 0)
-				wait(NULL);
-			else if (father == 0)
-				execve("/bin/ls", ft_strsplit(line, ' '), data->env);
-		}*/
-		free(line);
-		if (data->line)
+			data->line = ft_epur_str(line);
+			ft_line_parsor(data);
 			free(data->line);
+			free(line);
+		}
 	}
 }
 
@@ -108,5 +128,6 @@ int			main(int ac, char **av, char **env)
 	if ((data = struct_init(env)) == NULL)
 		env_error(NULL);
 	ft_sh(data);
+	ft_free_struct(data);
 	return (0);
 }
